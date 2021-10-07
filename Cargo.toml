@@ -17,7 +17,7 @@ proc-macro = true
 
 [dependencies]
 proc-macro2 = "1"
-syn = { version = "1", features = ["full"] }
+syn = { version = "1", features = ["full", "extra-traits"] }
 quote = "1"
 
 enum-ordinalize = "3.1"

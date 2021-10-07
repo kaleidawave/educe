@@ -66,7 +66,9 @@ impl TraitHandler for PartialEqEnumHandler {
 
                             let field_name = field.ident.as_ref().unwrap().to_string();
 
-                            if field_attribute.ignore {
+                            let ignore_field = field_attribute.ignore
+                                || type_attribute.ignored_types.iter().any(|ignored_type| ignored_type == &field.ty);
+                            if ignore_field {
                                 pattern_tokens
                                     .write_fmt(format_args!(
                                         "{field_name}: _,",
@@ -141,7 +143,9 @@ impl TraitHandler for PartialEqEnumHandler {
 
                             let field_name = format!("{}", index);
 
-                            if field_attribute.ignore {
+                            let ignore_field = field_attribute.ignore
+                                || type_attribute.ignored_types.iter().any(|ignored_type| ignored_type == &field.ty);
+                            if ignore_field {
                                 pattern_tokens.push_str("_,");
                                 pattern_2_tokens.push_str("_,");
                                 continue;

@@ -36,7 +36,12 @@ impl TraitHandler for PartialEqStructHandler {
                 }
                 .from_attributes(&field.attrs, traits);
 
-                if field_attribute.ignore {
+                let ignore_field = field_attribute.ignore
+                    || type_attribute
+                        .ignored_types
+                        .iter()
+                        .any(|ignored_type| ignored_type == &field.ty);
+                if ignore_field {
                     continue;
                 }
 

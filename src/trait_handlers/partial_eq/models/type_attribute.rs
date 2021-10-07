@@ -1,3 +1,5 @@
+use syn::Type;
+
 use super::super::super::{
     create_where_predicates_from_generic_parameters, create_where_predicates_from_lit_str,
 };
@@ -39,6 +41,7 @@ impl TypeAttributeBound {
 pub struct TypeAttribute {
     pub flag: bool,
     pub bound: TypeAttributeBound,
+    pub ignored_types: Vec<Type>,
 }
 
 #[derive(Debug, Clone)]
@@ -51,6 +54,7 @@ impl TypeAttributeBuilder {
     pub fn from_partial_eq_meta(&self, meta: &Meta) -> TypeAttribute {
         let mut flag = false;
         let mut bound = TypeAttributeBound::None;
+        let mut ignored_types = Vec::new();
 
         let correct_usage_for_partial_eq_attribute = {
             let mut usage = vec![];
@@ -171,6 +175,21 @@ impl TypeAttributeBuilder {
                                         }
                                     }
                                 }
+                                "ignore_types" => {
+                                    match meta {
+                                        Meta::List(list) => {
+                                            for item in list.nested.iter() {
+                                                if let NestedMeta::Lit(Lit::Str(str)) = item {
+                                                    dbg!();
+                                                    ignored_types.push(str.parse::<Type>().unwrap());
+                                                } else {
+                                                    panic!("Incorrect usage of 'ignore_types'")
+                                                }
+                                            }
+                                        }
+                                        _ => panic!("Incorrect usage of 'ignore_types'")
+                                    }
+                                }
                                 _ => panic::unknown_parameter("PartialEq", meta_name.as_str()),
                             }
                         }
@@ -204,6 +223,7 @@ impl TypeAttributeBuilder {
         TypeAttribute {
             flag,
             bound,
+            ignored_types
         }
     }
 
@@ -250,6 +270,7 @@ impl TypeAttributeBuilder {
         result.unwrap_or(TypeAttribute {
             flag: false,
             bound: TypeAttributeBound::None,
+            ignored_types: Vec::new()
         })
     }
 }
