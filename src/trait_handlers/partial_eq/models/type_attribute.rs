@@ -180,7 +180,6 @@ impl TypeAttributeBuilder {
                                         Meta::List(list) => {
                                             for item in list.nested.iter() {
                                                 if let NestedMeta::Lit(Lit::Str(str)) = item {
-                                                    dbg!();
                                                     ignored_types.push(str.parse::<Type>().unwrap());
                                                 } else {
                                                     panic!("Incorrect usage of 'ignore_types'")
